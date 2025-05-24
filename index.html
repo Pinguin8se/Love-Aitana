@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TE AMITO - Matrix Style Enhanced</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #000;
+            overflow: hidden;
+            font-family: 'Courier New', monospace;
+            height: 100vh;
+        }
+
+        #matrix-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        .message-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2;
+            text-align: center;
+            animation: pulse 2s infinite;
+        }
+
+        .message {
+            font-size: 3rem;
+            color: #ff1493;
+            text-shadow: 
+                0 0 10px #ff1493,
+                0 0 20px #ff1493,
+                0 0 30px #ff1493,
+                0 0 40px #ff1493;
+            font-weight: bold;
+            margin: 10px 0;
+            animation: glow 1.5s ease-in-out infinite alternate;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #ff1493;
+            text-shadow: 0 0 10px #ff1493;
+            margin-top: 20px;
+            opacity: 0.8;
+        }
+
+        @keyframes glow {
+            from {
+                text-shadow: 
+                    0 0 10px #ff1493,
+                    0 0 20px #ff1493,
+                    0 0 30px #ff1493,
+                    0 0 40px #ff1493;
+            }
+            to {
+                text-shadow: 
+                    0 0 20px #ff1493,
+                    0 0 30px #ff1493,
+                    0 0 40px #ff1493,
+                    0 0 50px #ff1493,
+                    0 0 60px #ff1493;
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.05); }
+        }
+
+        .hacker-text {
+            position: absolute;
+            font-size: 0.8rem;
+            color: #ff1493;
+            opacity: 0.6;
+            animation: fadeInOut 10s infinite;
+        }
+
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 0.8; }
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 3;
+        }
+
+        .control-btn {
+            background: rgba(0, 255, 0, 0.2);
+            border: 1px solid #00ff00;
+            color: #00ff00;
+            padding: 10px 15px;
+            margin: 5px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            transition: all 0.3s;
+            border-radius: 3px;
+        }
+
+        .control-btn:hover {
+            background: rgba(0, 255, 0, 0.4);
+            box-shadow: 0 0 10px #00ff00;
+        }
+
+        .control-btn.active {
+            background: rgba(255, 20, 147, 0.3);
+            border-color: #ff1493;
+            color: #ff1493;
+            box-shadow: 0 0 15px #ff1493;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(calc(100vh + 50px)) rotate(360deg);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="matrix-canvas"></canvas>
+    
+    <div class="message-container">
+        <div class="message">TE AMO Aitana❤️</div>
+        <div class="message">TE AMO Aitana❤️</div>
+        <div class="message">TE AMO Aitana❤️</div>
+        <div class="subtitle">[ ACCESO CONCEDIDO AL CORAZÓN Key "Aitana❤️" ]</div>
+    </div>
+
+    <div class="controls">
+        <button class="control-btn" id="matrix-toggle" onclick="toggleMatrix()">Activar Key Aitana❤️</button>
+        <button class="control-btn" onclick="changeMessage()">Cambiar Mensaje</button>
+    </div>
+
+    <audio id="background-music" src="audio/cancion.mp3" preload="auto"></audio>
+
+    <script>
+        const canvas = document.getElementById('matrix-canvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        let matrixActive = false;
+        let animationId = null;
+
+        const text = 'TE AMITO';
+        let drops = [];
+        let fontSize = 16;
+        let columnSpacing;
+        let columns;
+
+        function initDrops() {
+            columnSpacing = fontSize * 0.75; 
+            columns = Math.floor(canvas.width / columnSpacing);
+            drops = new Array(columns).fill(0).map(() => Math.random() * -1000);
+        }
+
+        function draw() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            for (let i = 0; i < columns; i++) {
+                let x = i * columnSpacing;
+                let y = drops[i];
+
+                for (let j = 0; j < 10; j++) {
+                    let yPos = y - j * fontSize * 1.1;
+                    let opacity = Math.max(0, 1 - j * 0.15);
+
+                    ctx.fillStyle = `rgba(255, 20, 147, ${opacity})`;
+                    ctx.shadowColor = `rgba(255, 20, 147, ${opacity})`;
+                    ctx.shadowBlur = 25 * opacity;
+
+                    ctx.fillText(text, x, yPos);
+                }
+
+                drops[i] += fontSize * 0.084;
+
+                if (drops[i] > canvas.height + fontSize * 12) {
+                    drops[i] = Math.random() * -1000;
+                }
+            }
+
+            animationId = requestAnimationFrame(draw);
+        }
+
+        function toggleMatrix() {
+            const button = document.getElementById('matrix-toggle');
+            const music = document.getElementById('background-music');
+            music.volume = 0.5; // Ajustar el volumen a 0.6
+            
+            if (!matrixActive) {
+                
+                matrixActive = true;
+                initDrops();
+                draw();
+                music.play(); 
+                button.textContent = 'Desactivar Matrix';
+                button.classList.add('active');
+            } else {
+               
+                matrixActive = false;
+                if (animationId) {
+                    cancelAnimationFrame(animationId);
+                }
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                music.pause(); 
+                music.currentTime = 0; 
+                button.textContent = 'Activar Matrix';
+                button.classList.remove('active');
+            }
+        }
+
+        const messages = [
+            'TE AMO Aitana❤️',
+            'I LOVE YOU Aitana❤️',
+            'JE T\'AIME Aitana❤️',
+            'TI AMO Aitana❤️',
+            'ICH LIEBE DICH Aitana❤️',
+            '我爱你Aitana❤️',
+            'KOCHAM CIĘAitana❤️',
+            'TE AMITOAitana❤️' 
+        ];
+
+        let currentMessageIndex = 0;
+
+        function changeMessage() {
+            const messageElements = document.querySelectorAll('.message');
+            currentMessageIndex = (currentMessageIndex + 1) % messages.length;
+            
+            messageElements.forEach(el => {
+                el.textContent = messages[currentMessageIndex];
+            });
+        }
+
+        // Textos flotantes
+        function addFloatingTexts() {
+            const hackerTexts = [
+                'INICIALIZANDO PROTOCOLO DE AMOR...',
+                'BYPASS SECURITY: SUCCESS"A"❤️',
+                '❤️Aitana mi base de datos',
+                'LOVE Rawr❤️ ACTIVATED',
+                'ENCRYPTION: TE_AMITO_FOREVER🌷',
+                'STATUS: 🌷ENAMORADO De Aitana🌷',
+                'TE AMITO DETECTED🌷',
+                'LOVE PROTOCOL: ENGAGED 🌷Aitana❤️'
+            ];
+
+            setInterval(() => {
+                const text = hackerTexts[Math.floor(Math.random() * hackerTexts.length)];
+                const div = document.createElement('div');
+                div.className = 'hacker-text';
+                div.textContent = text;
+                div.style.left = Math.random() * (window.innerWidth - 300) + 'px';
+                div.style.top = Math.random() * window.innerHeight + 'px';
+                document.body.appendChild(div);
+
+                setTimeout(() => {
+                    if (div.parentNode) {
+                        div.remove();
+                    }
+                }, 3000);
+            }, 2000);
+        }
+
+        document.addEventListener('click', () => {
+            for(let i = 0; i < 10; i++) {
+                setTimeout(() => {
+                    const heart = document.createElement('div');
+                    heart.innerHTML = '❤️🌷';
+                    heart.style.position = 'absolute';
+                    heart.style.left = Math.random() * window.innerWidth + 'px';
+                    heart.style.top = '-50px';
+                    heart.style.fontSize = '2rem';
+                    heart.style.zIndex = '4';
+                    heart.style.animation = 'fall 3s linear forwards';
+                    heart.style.pointerEvents = 'none';
+                    document.body.appendChild(heart);
+
+                    setTimeout(() => {
+                        if (heart.parentNode) {
+                            heart.remove();
+                        }
+                    }, 3000);
+                }, i * 100);
+            }
+        });
+
+        addFloatingTexts();
+
+ 
+    </script>
+</body>
+</html>
